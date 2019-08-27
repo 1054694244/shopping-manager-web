@@ -21,7 +21,7 @@
         <v-data-table
           :headers="headers"
           :items="brands"
-          :options.sync="pagination"
+          :pagination.sync="pagination"
           :server-items-length="totalBrands"
           :loading="loading"
           class="elevation-1"
@@ -67,10 +67,24 @@
     },
     mounted(){
       //查询数据
-      this.getDateFromServer();
+      this.getDataFromServer();
+    },
+    watch:{
+      pagination:{//监听pagination属性的变化
+        deep: true,//deep为true，会监视pagination的属性及属性中的对象属性变化
+        handler(){
+          //变化后的回调函数，这里我们再一次调用getDataFromServer即可
+          this.getDataFromServer();
+        }
+      },
+      search:{//监视搜索字段
+        handler(){
+          this.getDataFromServer();
+        }
+      }
     },
     methods:{
-      getDateFromServer(){
+      getDataFromServer(){
         this.$http.get("/item/brand/page",{
           params:{
             key:this.search,
@@ -82,6 +96,7 @@
         })
           .then(data =>
           {
+            console.log(data.data.total)
             //将得到的数据赋值给本地属性
             this.brands = data.data.items;
             this.totalBrands = data.data.total;
@@ -91,15 +106,15 @@
           .catch(data => alert(data.message))
 
         //设置延迟一段时间，随后进行赋值
-        setTimeout(()=>{
+        /*setTimeout(()=>{
           //然后赋值给brands
-          this.brands = data;
-          this.totalBrands = data.length;
+          this.brands = brands;
+          this.totalBrands = brands.length;
           //完成复制后，吧加载状态赋值为false
           this.loading = false;
-        },400)
+        },400)*/
       }
-    }
+    },
   }
 </script>
 
