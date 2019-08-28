@@ -1,18 +1,35 @@
 <template>
   <div>
+    <!--弹出的对话框-->
+    <v-dialog max-width="500" v-model="show" persistent>
+      <v-card>
+        <!--对话框的标题-->
+        <!--dense：紧凑显示 dark：黑暗主题 color：颜色（primary就是整个网站的主色调-->
+        <v-toolbar dense dark color="primary">
+          <v-toolbar-title>新增品牌</v-toolbar-title>
+          <v-spacer/>
+          <!--关闭dialog的按钮-->
+          <v-btn icon @click="closeDialog"><v-icon>close</v-icon></v-btn>
+        </v-toolbar>
+        <!--对话框的内容，表单-->
+        <v-card-text class="px-5">
+          <MyBrandForm></MyBrandForm>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-card>
       <!--卡片的头部-->
       <v-card-title>
-        <v-btn color="primary">新增</v-btn>
+        <v-btn color="primary" @click="addBrand">新增品牌</v-btn>
         <!--空间隔离工具-->
         <v-spacer/>
-          <v-text-field
-            label="输入关键字搜索"
-            single-line
-            v-model="search"
-            append-icon="search"
-            hide-details
-          ></v-text-field>
+        <v-text-field
+          label="输入关键字搜索"
+          single-line
+          v-model="search"
+          append-icon="search"
+          hide-details
+        ></v-text-field>
       </v-card-title>
       <!--分割线-->
       <v-divider/>
@@ -47,6 +64,8 @@
 </template>
 
 <script>
+  import MyBrandForm from './MyBrandForm'
+
   export default {
     name: "my-brand",
     data(){
@@ -62,7 +81,8 @@
           {text: 'LOGO', align: 'left', sortable: false, value: 'image'},
           {text: '首字母', align: 'left', value: 'letter', sortable: true,},
           {text: '操作', align: 'left', value: 'id', sortable: false,}
-        ]
+        ],
+        show:false,//控制对话的显示
       }
     },
     mounted(){
@@ -113,9 +133,19 @@
           //完成复制后，吧加载状态赋值为false
           this.loading = false;
         },400)*/
+      },
+      addBrand(){
+        this.show = true;
+      },
+      closeDialog(){
+        this.show = false;
       }
     },
+    components:{
+      MyBrandForm
+    }
   }
 </script>
 
 <style scoped></style>
+

@@ -34,6 +34,12 @@
       },
       handleClick(node) {
         console.log(node)
+        /*this.$http.get("/item/category/list",{
+          params:{
+            parentId:node.id
+          }
+        })
+          .then(data => console.log(data.data))*/
       }
     }
   };
