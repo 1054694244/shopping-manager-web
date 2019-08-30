@@ -17,7 +17,7 @@
         <v-flex>
           <v-upload
             v-model="brand.image"
-            url="/upload"
+            url="/upload/image"
             :multiple="false"
             :pic-width="250"
             :pic-height="90"/>
@@ -36,6 +36,15 @@
 
   export default {
     name: "my-brand-form",
+    props:{
+      oldBrand:{
+        type:Object
+      },
+      isEdit:{
+        type:Boolean,
+        default:false,
+      }
+    },
     data() {
       return {
         valid:false, // 表单校验结果标记
@@ -69,10 +78,17 @@
           //将字母都转换为大写
           params.letter = letter.toUpperCase();
           //将数据提交到后台
-          this.$http.post('/item/brand',params)
+          //this.$http.post('/item/brand',this.$qs.stringify(params))
+          this.$http({
+            method:this.isEdit?'PUT':'POST',
+            url:'/item/brand',
+            data:this.$qs.stringify(params)
+          })
             .then(()=>{
+              this.$emit("close");
               //弹出提示
               this.$message.success("保存成功");
+
             })
             .catch(() =>{
               this.$message.error("保存失败")
@@ -85,9 +101,28 @@
         //需要手动清空商品分类
         this.categories=[];
       }
+    },
+    watch:{
+      oldBrand:{
+        //监控oldBrand变化
+        handler(val){
+          if (val){
+            //注意不要直接复制，否认这边的修改会影响到父组件的数据，copy属性即可
+            this.brand = Object.deepCopy(val);
+            console.log(this.brand)
+          }else{
+            this.brand = {
+              name:'',
+              letter:'',
+              image:'',
+              categories:[],
+            }
+          }
+        }
+      },
+          deep: true
     }
   }
-
 </script>
 
 <style scoped>

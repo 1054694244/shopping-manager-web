@@ -6,14 +6,14 @@
         <!--对话框的标题-->
         <!--dense：紧凑显示 dark：黑暗主题 color：颜色（primary就是整个网站的主色调-->
         <v-toolbar dense dark color="primary">
-          <v-toolbar-title>新增品牌</v-toolbar-title>
+          <v-toolbar-title>{{isEdit?'修改':'新增'}}品牌</v-toolbar-title>
           <v-spacer/>
           <!--关闭dialog的按钮-->
           <v-btn icon @click="closeDialog"><v-icon>close</v-icon></v-btn>
         </v-toolbar>
         <!--对话框的内容，表单-->
         <v-card-text class="px-5">
-          <MyBrandForm></MyBrandForm>
+          <MyBrandForm @close="closeDialog" :oldBrand="oldBrand" :isEdit="isEdit"></MyBrandForm>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -49,8 +49,8 @@
             <td><img :src="props.item.image"></td>
             <td>{{props.item.letter}}</td>
             <td>
-              <v-btn color="info">编辑</v-btn>
-              <v-btn color="warning">删除</v-btn>
+              <v-btn color="info" @click="editBrand(props.item)">编辑</v-btn>
+              <v-btn color="warning" @click="deleteBrand(props.item)">删除</v-btn>
             </td>
           </template>
         </v-data-table>
@@ -83,6 +83,8 @@
           {text: '操作', align: 'left', value: 'id', sortable: false,}
         ],
         show:false,//控制对话的显示
+        oldBrand:{},//即将被编辑的品牌数据
+        isEdit: false,//是否是编辑
       }
     },
     mounted(){
@@ -135,10 +137,31 @@
         },400)*/
       },
       addBrand(){
+        this.isEdit = false;
         this.show = true;
+        this.oldBrand = null;
+      },
+      editBrand(oldBrand){
+        this.$http.get("/item/brandId/"+oldBrand.id)
+          .then(data=>{
+            //控制窗口可见
+            this.isEdit = true;
+            this.show = true;
+            this.oldBrand = oldBrand;
+            this.oldBrand.categories = data.data;
+          })
       },
       closeDialog(){
         this.show = false;
+        //重新加载数据
+        this.getDataFromServer();
+      },
+      deleteBrand(oldBrand){
+        this.$http.delete("/item/brandId/"+oldBrand.id)
+          .then(data=>{
+            this.$message.success("删除成功");
+            this.getDataFromServer();
+          })
       }
     },
     components:{
