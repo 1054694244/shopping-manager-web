@@ -273,6 +273,9 @@ export default {
     },
     "goods.categories": {
       deep: true,
+
+
+
       handler(val) {
         // 判断商品分类是否存在，存在才查询
         if (val && val.length > 0) {
